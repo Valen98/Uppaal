@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+const int maxProcesses = 5;
+const int numSemaphores = 1;
+
+int[0,1] ready[0];
+int[0,1] ID;
+
+urgent chan[s] V;
+urgent chan[s] P;
+urgent chan sem;
+
+int [0,1] sem[s] = [1]</declaration>
+	<template>
+		<name x="5" y="5">SemaphoreTest</name>
+		<declaration>// Place local declarations here.
+
+int[5, 0] Blocked = 5;
+int[0,4] Queue[0];
+int[0, 5] pid;
+int[0,5] i;</declaration>
+		<location id="id0" x="-255" y="-42">
+		</location>
+		<location id="id1" x="51" y="-42">
+		</location>
+		<location id="id2" x="357" y="-42">
+		</location>
+		<location id="id3" x="-51" y="162">
+		</location>
+		<location id="id4" x="-51" y="400">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-195" y="-135">Blocked == 0</label>
+			<label kind="assignment" x="-195" y="-110">sem[s]++</label>
+			<nail x="51" y="-178"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-407" y="400">Queue[Blocked] = pid,
+Blocked++</label>
+			<nail x="-425" y="400"/>
+			<nail x="-425" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-237" y="128">Blocked == 0 &amp;&amp; sem[s] &gt; 0</label>
+			<label kind="assignment" x="-237" y="162">sem[s]--,
+ready[pid] = 1</label>
+			<nail x="-255" y="162"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-51" y="247">sem[s] == 0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-85" y="34">P[s]?</label>
+			<label kind="assignment" x="-85" y="51">pid = ID,
+ready[pid] = 0,
+ID = 0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-170" y="-340">i &gt; Blocked</label>
+			<label kind="assignment" x="-170" y="-306">i = 0</label>
+			<nail x="357" y="-305"/>
+			<nail x="-255" y="-305"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="guard" x="433" y="-68">i &lt;= Blocked</label>
+			<label kind="assignment" x="433" y="-51">Queue[i] = Queue=[i+1],
+i++</label>
+			<nail x="425" y="-76"/>
+			<nail x="425" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="85" y="-67">Blocked &gt; 0</label>
+			<label kind="assignment" x="68" y="-42">pid = Queue[0], 
+read[pid]=1,
+blocked--, 
+pid = 0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-111" y="-42">V[s]?</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+Process = Template();
+// List one or more processes to be composed into a system.
+system Process;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
