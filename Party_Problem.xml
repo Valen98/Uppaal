@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+int max = 10;
+
+int bowl = max;
+
+chan fillCup, fillUp, filled;
+</declaration>
+	<template>
+		<name>Bowl</name>
+		<location id="id0" x="-8" y="0">
+			<name x="-59" y="-17">Begin</name>
+		</location>
+		<location id="id1" x="187" y="-85">
+			<name x="177" y="-119">Notify</name>
+		</location>
+		<location id="id2" x="195" y="76">
+			<name x="185" y="42">Drink</name>
+		</location>
+		<location id="id3" x="306" y="-85">
+		</location>
+		<location id="id4" x="416" y="-85">
+		</location>
+		<location id="id5" x="314" y="76">
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id0"/>
+			<nail x="314" y="178"/>
+			<nail x="0" y="178"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="229" y="51">fillCup!</label>
+			<label kind="assignment" x="238" y="76">bowl--</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="guard" x="51" y="42">bowl &gt; 0</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<nail x="416" y="-195"/>
+			<nail x="-8" y="-195"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="324" y="-102">filled?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="229" y="-110">fillUp!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="42" y="-68">bowl == 0</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Guest</name>
+		<declaration>// Place local declarations here.
+
+int cup = 0;</declaration>
+		<location id="id6" x="161" y="59">
+		</location>
+		<location id="id7" x="280" y="59">
+		</location>
+		<location id="id8" x="348" y="59">
+		</location>
+		<init ref="id6"/>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id6"/>
+			<nail x="348" y="-59"/>
+			<nail x="161" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="298" y="59">cup--</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="guard" x="204" y="17">cup == 0</label>
+			<label kind="synchronisation" x="204" y="34">fillCup?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Host</name>
+		<location id="id9" x="0" y="0">
+		</location>
+		<location id="id10" x="144" y="-42">
+		</location>
+		<location id="id11" x="255" y="-42">
+		</location>
+		<location id="id12" x="348" y="-42">
+		</location>
+		<init ref="id9"/>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="280" y="-59">filled!</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="161" y="-42">:bowl = 10</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="18" y="-38">fillUp?</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+Bowl1 = Bowl();
+Guest1 = Guest();
+Guest2 = Guest();
+Host1 = Host();
+// List one or more processes to be composed into a system.
+system Bowl1, Guest1, Guest2, Host1;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
