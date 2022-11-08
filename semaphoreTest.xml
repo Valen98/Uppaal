@@ -2,113 +2,178 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-const int maxProcesses = 5;
+const int maxProcesses = 2;
+//Amount of semaphores
 const int numSemaphores = 1;
 
-int[0,1] ready[0];
-int[0,1] ID;
+int[0,maxProcesses] ready[maxProcesses];
+int[0,maxProcesses] ID;
+urgent chan V[numSemaphores];
+urgent chan P[numSemaphores];
+urgent chan Go;
 
-urgent chan[s] V;
-urgent chan[s] P;
-urgent chan sem;
-
-int [0,1] sem[s] = [1]</declaration>
+int [0,1] sem[numSemaphores] = {1};</declaration>
 	<template>
 		<name x="5" y="5">SemaphoreTest</name>
+		<parameter>const int s</parameter>
 		<declaration>// Place local declarations here.
 
-int[5, 0] Blocked = 5;
-int[0,4] Queue[0];
+int[0, 5] blocked = 0;
+int[0,4] Queue[4];
 int[0, 5] pid;
 int[0,5] i;</declaration>
-		<location id="id0" x="-255" y="-42">
+		<location id="id0" x="-93" y="-42">
 		</location>
-		<location id="id1" x="51" y="-42">
+		<location id="id1" x="213" y="-42">
+			<committed/>
 		</location>
-		<location id="id2" x="357" y="-42">
+		<location id="id2" x="519" y="-42">
+			<committed/>
 		</location>
-		<location id="id3" x="-51" y="162">
+		<location id="id3" x="111" y="162">
+			<committed/>
 		</location>
-		<location id="id4" x="-51" y="400">
+		<location id="id4" x="111" y="400">
+			<committed/>
 		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-195" y="-135">Blocked == 0</label>
-			<label kind="assignment" x="-195" y="-110">sem[s]++</label>
-			<nail x="51" y="-178"/>
+			<label kind="guard" x="-33" y="-135">blocked == 0</label>
+			<label kind="assignment" x="-33" y="-110">sem[s]++</label>
+			<nail x="213" y="-178"/>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id0"/>
-			<label kind="assignment" x="-407" y="400">Queue[Blocked] = pid,
-Blocked++</label>
-			<nail x="-425" y="400"/>
-			<nail x="-425" y="-42"/>
+			<label kind="assignment" x="-245" y="400">Queue[blocked] = pid,
+blocked++</label>
+			<nail x="-263" y="400"/>
+			<nail x="-263" y="-42"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-237" y="128">Blocked == 0 &amp;&amp; sem[s] &gt; 0</label>
-			<label kind="assignment" x="-237" y="162">sem[s]--,
+			<label kind="guard" x="-75" y="128">blocked == 0 &amp;&amp; sem[s] &gt; 0</label>
+			<label kind="assignment" x="-75" y="162">sem[s]--,
 ready[pid] = 1</label>
-			<nail x="-255" y="162"/>
+			<nail x="-93" y="162"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id4"/>
-			<label kind="guard" x="-51" y="247">sem[s] == 0</label>
+			<label kind="guard" x="111" y="247">sem[s] == 0</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-85" y="34">P[s]?</label>
-			<label kind="assignment" x="-85" y="51">pid = ID,
+			<label kind="synchronisation" x="77" y="34">P[s]?</label>
+			<label kind="assignment" x="77" y="51">pid = ID,
 ready[pid] = 0,
 ID = 0</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id0"/>
-			<label kind="guard" x="-170" y="-340">i &gt; Blocked</label>
-			<label kind="assignment" x="-170" y="-306">i = 0</label>
-			<nail x="357" y="-305"/>
-			<nail x="-255" y="-305"/>
+			<label kind="guard" x="-8" y="-340">i &gt; blocked</label>
+			<label kind="assignment" x="-8" y="-306">i = 0</label>
+			<nail x="519" y="-305"/>
+			<nail x="-93" y="-305"/>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id2"/>
-			<label kind="guard" x="433" y="-68">i &lt;= Blocked</label>
-			<label kind="assignment" x="433" y="-51">Queue[i] = Queue=[i+1],
+			<label kind="guard" x="595" y="-68">i &lt;= blocked</label>
+			<label kind="assignment" x="595" y="-51">Queue[i] = Queue[i+1],
 i++</label>
-			<nail x="425" y="-76"/>
-			<nail x="425" y="-8"/>
+			<nail x="587" y="-76"/>
+			<nail x="587" y="-8"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
-			<label kind="guard" x="85" y="-67">Blocked &gt; 0</label>
-			<label kind="assignment" x="68" y="-42">pid = Queue[0], 
-read[pid]=1,
+			<label kind="guard" x="247" y="-67">blocked &gt; 0</label>
+			<label kind="assignment" x="230" y="-42">pid = Queue[0], 
+ready[pid]=1,
 blocked--, 
 pid = 0</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="-111" y="-42">V[s]?</label>
+			<label kind="synchronisation" x="51" y="-42">V[s]?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Progression</name>
+		<location id="id5" x="0" y="0">
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="42" y="0">Go!</label>
+			<nail x="68" y="34"/>
+			<nail x="68" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Process</name>
+		<parameter>const int id</parameter>
+		<location id="id6" x="0" y="0">
+			<name x="-17" y="-34">Begin</name>
+		</location>
+		<location id="id7" x="204" y="0">
+			<name x="221" y="-8">Wait4CS</name>
+		</location>
+		<location id="id8" x="204" y="136">
+			<name x="221" y="127">InCS</name>
+		</location>
+		<location id="id9" x="0" y="136">
+			<name x="-76" y="127">AfterCS</name>
+		</location>
+		<init ref="id6"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-25" y="68">Go?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="25" y="110">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="guard" x="204" y="34">ready[id]==1</label>
+			<label kind="synchronisation" x="204" y="51">Go?</label>
+			<label kind="assignment" x="204" y="68">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="42" y="-17">P[0]!</label>
+			<label kind="assignment" x="42" y="0">ID=id,
+ready[id]=0</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
-Process = Template();
+Semaphore = SemaphoreTest(0);
+Erik = Process(0);
+Julia = Process(1);
 // List one or more processes to be composed into a system.
-system Process;
-    </system>
+system Semaphore, Erik, Julia, Progression;
+</system>
 	<queries>
 		<query>
 			<formula></formula>
 			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] ! deadlock</formula>
+			<comment>Check if there is a deadlock for all states.</comment>
 		</query>
 	</queries>
 </nta>
