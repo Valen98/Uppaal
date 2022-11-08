@@ -2,7 +2,7 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-const int maxProcesses = 2;
+const int maxProcesses = 4;
 //Amount of semaphores
 const int numSemaphores = 1;
 
@@ -18,8 +18,8 @@ int [0,1] sem[numSemaphores] = {1};</declaration>
 		<parameter>const int s</parameter>
 		<declaration>// Place local declarations here.
 
-int[0, 5] blocked = 0;
-int[0,4] Queue[4];
+int[0, 6] blocked = 0;
+int[0,6] Queue[6];
 int[0, 5] pid;
 int[0,5] i;</declaration>
 		<location id="id0" x="119" y="-8">
@@ -163,13 +163,31 @@ ready[id]=0</label>
 Semaphore = SemaphoreTest(0);
 Erik = Process(0);
 Julia = Process(1);
+Ines = Process(2);
+Charlie = Process(3);
 // List one or more processes to be composed into a system.
-system Semaphore, Erik, Julia, Progression;
+system Semaphore, Erik, Julia, Ines, Charlie, Progression;
 </system>
 	<queries>
 		<query>
-			<formula></formula>
+			<formula>E&lt;&gt; not (sem[0] &gt; 1 &amp;&amp; sem[0]&lt; 0)</formula>
 			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not (sem[0] &gt; 1 &amp;&amp; sem[0] &lt; 0)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Julia.Wait4CS --&gt; Julia.InCS</formula>
+			<comment>Check if Julia can enter his CS</comment>
+		</query>
+		<query>
+			<formula>Erik.Wait4CS --&gt; Erik.InCS</formula>
+			<comment>Check if Erik can enter his CS</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not (Erik.InCS &amp;&amp; Julia.InCS)</formula>
+			<comment>Check if Erik and Julia cannot be inside the Critical Section at the same time</comment>
 		</query>
 		<query>
 			<formula>A[] ! deadlock</formula>
