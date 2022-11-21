@@ -2,26 +2,32 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-const int maxProcesses = 4;
+const int maxProcesses = 6;
 //Amount of semaphores
-const int numSemaphores = 1;
-int GENDER;
-int currentGender = -1;
+const int numSemaphores = 2;
+const int maxSeats = 2;
 
-int[0,maxProcesses] ready[maxProcesses];
-int[0,maxProcesses] ID;
+// Number of processes in bathroom for each gender
+int [0, maxProcesses] nm = 0;
+int [0, maxProcesses] nf = 0;
+
+int[0, maxProcesses] ready[maxProcesses];
+int[0, maxProcesses] ID;
+
 urgent chan V[numSemaphores];
 urgent chan P[numSemaphores];
 urgent chan Go;
+urgent chan take_seat, leave_seat;
 
-int [0,2] sem[numSemaphores] = {2};</declaration>
+// [0] = mutex, [1]= bathroom
+int [0, 2] sem[numSemaphores] = { 1 , 2 };</declaration>
 	<template>
 		<name x="5" y="5">Semaphore</name>
 		<parameter>const int s</parameter>
 		<declaration>// Place local declarations here.
 
-int[0, 6] blocked = 0;
-int[0,6] Queue[6];
+int[0, maxProcesses] blocked = 0;
+int[0,maxProcesses - 1] Queue[maxProcesses];
 int[0, 5] pid;
 int[0,5] i;</declaration>
 		<location id="id0" x="119" y="-8">
@@ -42,9 +48,8 @@ int[0,5] i;</declaration>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="guard" x="179" y="-101">blocked == 0</label>
-			<label kind="assignment" x="289" y="-93">sem[s]++,
-currentGender = -1</label>
+			<label kind="guard" x="221" y="-110">blocked == 0</label>
+			<label kind="assignment" x="289" y="-85">sem[s]++</label>
 			<nail x="425" y="-144"/>
 		</transition>
 		<transition>
@@ -124,63 +129,166 @@ pid = 0</label>
 	<template>
 		<name>Person</name>
 		<parameter>const int id, const int gender</parameter>
-		<location id="id6" x="0" y="0">
-			<name x="-59" y="-8">Begin</name>
+		<location id="id6" x="-272" y="-204">
+			<name x="-282" y="-238">Begin</name>
 		</location>
-		<location id="id7" x="204" y="0">
-			<name x="221" y="-8">Wait4CS</name>
+		<location id="id7" x="-272" y="0">
 		</location>
-		<location id="id8" x="204" y="136">
-			<name x="221" y="127">InCS</name>
+		<location id="id8" x="-68" y="-204">
 		</location>
-		<location id="id9" x="0" y="136">
-			<name x="-76" y="127">AfterCS</name>
+		<location id="id9" x="136" y="-204">
+		</location>
+		<location id="id10" x="272" y="34">
+			<name x="297" y="25">InBathroom</name>
+		</location>
+		<location id="id11" x="-272" y="170">
+		</location>
+		<location id="id12" x="476" y="170">
+		</location>
+		<location id="id13" x="714" y="476">
+		</location>
+		<location id="id14" x="-408" y="170">
+		</location>
+		<location id="id15" x="136" y="-374">
+		</location>
+		<location id="id16" x="272" y="170">
+			<name x="161" y="178">WaitLeaveSeat</name>
+		</location>
+		<location id="id17" x="-34" y="33">
+			<name x="-34" y="51">TakeSeat</name>
 		</location>
 		<init ref="id6"/>
 		<transition>
-			<source ref="id6"/>
+			<source ref="id17"/>
+			<target ref="id10"/>
+			<label kind="guard" x="102" y="8">ready[id]==1</label>
+			<label kind="synchronisation" x="102" y="42">P[1]!</label>
+			<label kind="assignment" x="102" y="59">ready[id]==0</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id12"/>
+			<label kind="guard" x="331" y="144">ready[0]==1</label>
+			<label kind="synchronisation" x="331" y="170">P[0]!</label>
+			<label kind="assignment" x="331" y="187">ready[0]==0</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
 			<target ref="id6"/>
-			<label kind="guard" x="-76" y="-110">gender != currentGender &amp;&amp; currentGender != -1</label>
-			<nail x="51" y="-85"/>
-			<nail x="-68" y="-85"/>
+			<label kind="synchronisation" x="-59" y="-289">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-382" y="-8">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-357" y="170">nf &gt; 0</label>
+			<label kind="synchronisation" x="-357" y="187">Go?</label>
+			<nail x="-374" y="170"/>
 		</transition>
 		<transition>
 			<source ref="id9"/>
+			<target ref="id15"/>
+			<label kind="guard" x="144" y="-323">nm &gt; 0</label>
+			<label kind="synchronisation" x="144" y="-306">Go?</label>
+			<nail x="136" y="-280"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id17"/>
+			<label kind="guard" x="76" y="-102">nm == 0</label>
+			<label kind="synchronisation" x="76" y="-85">Go?</label>
+			<label kind="assignment" x="76" y="-68">nf++</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-144" y="102">nf == 0</label>
+			<label kind="synchronisation" x="-144" y="119">Go?</label>
+			<label kind="assignment" x="-144" y="136">nm++</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
 			<target ref="id6"/>
-			<label kind="synchronisation" x="-25" y="68">Go?</label>
+			<label kind="synchronisation" x="-119" y="544">V[0]!</label>
+			<nail x="714" y="544"/>
+			<nail x="-476" y="544"/>
+			<nail x="-476" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="guard" x="722" y="289">gender == 1</label>
+			<label kind="synchronisation" x="722" y="323">Go?</label>
+			<label kind="assignment" x="722" y="306">nf--</label>
+			<nail x="714" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="guard" x="484" y="289">gender == 0</label>
+			<label kind="synchronisation" x="484" y="323">Go?</label>
+			<label kind="assignment" x="484" y="306">nm--</label>
+			<nail x="476" y="476"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="238" y="93">V[1]!</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-263" y="51">ready[id]==1</label>
+			<label kind="synchronisation" x="-263" y="68">Go?</label>
+			<label kind="assignment" x="-263" y="85">ready[id]=0</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
 			<target ref="id9"/>
-			<label kind="synchronisation" x="25" y="110">V[0]!</label>
-		</transition>
-		<transition>
-			<source ref="id7"/>
-			<target ref="id8"/>
-			<label kind="guard" x="204" y="34">ready[id]==1</label>
-			<label kind="synchronisation" x="204" y="51">Go?</label>
-			<label kind="assignment" x="204" y="68">ready[id]=0</label>
+			<label kind="guard" x="0" y="-229">ready[id]==1</label>
+			<label kind="synchronisation" x="0" y="-204">Go?</label>
+			<label kind="assignment" x="0" y="-187">ready[id]=0</label>
 		</transition>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id7"/>
-			<label kind="guard" x="42" y="-42">currentGender == gender  || currentGender == -1</label>
-			<label kind="synchronisation" x="42" y="-17">P[0]!</label>
-			<label kind="assignment" x="42" y="0">ID=id,
-ready[id]=0,
-currentGender = gender</label>
+			<label kind="guard" x="-263" y="-110">gender == 0</label>
+			<label kind="synchronisation" x="-263" y="-93">P[0]!</label>
+			<label kind="assignment" x="-263" y="-76">ID=id,
+ready[id] = 0</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-195" y="-229">gender == 1</label>
+			<label kind="synchronisation" x="-195" y="-204">P[0]!</label>
+			<label kind="assignment" x="-195" y="-187">ID=id,
+ready[id] = 0</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
-Semaphore1 = Semaphore(0);
 Erik = Person(0, 0);
 Julia = Person(1, 1);
 Ines = Person(2, 1);
 Charlie = Person(3, 0);
+//Karin = Person(4, 1);
+//Kalle = Person(5, 0);
+
+Mutex = Semaphore(0);
+Bathroom = Semaphore(1);
+
 // List one or more processes to be composed into a system.
-system Semaphore1, Erik, Julia, Ines, Charlie, Progression;
+system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex;
 </system>
 	<queries>
+		<query>
+			<formula>E&lt;&gt; occupiedSeats == 2</formula>
+			<comment></comment>
+		</query>
 		<query>
 			<formula>A[] (Erik.Wait4CS &amp;&amp; Charlie.Wait4CS)</formula>
 			<comment></comment>
