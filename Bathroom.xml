@@ -4,100 +4,103 @@
 	<declaration>// Place global declarations here.
 const int maxProcesses = 4;
 //Amount of semaphores
-const int numSemaphores = 1;
+const int numSemaphores = 2;
 int GENDER;
 int currentGender = -1;
-
+int insideMale = 0;
+int insideFemale = 0;
+int blockedMale = 0;
+int blockedFemale = 0;
 int[0,maxProcesses] ready[maxProcesses];
 int[0,maxProcesses] ID;
 urgent chan V[numSemaphores];
 urgent chan P[numSemaphores];
 urgent chan Go;
+int [0,2] sem[numSemaphores] = {2,1};
 
-int [0,2] sem[numSemaphores] = {2};</declaration>
+</declaration>
 	<template>
 		<name x="5" y="5">Semaphore</name>
 		<parameter>const int s</parameter>
 		<declaration>// Place local declarations here.
 
-int[0, 6] blocked = 0;
+int[0, 8] blocked = 0;
 int[0,6] Queue[6];
-int[0, 5] pid;
+int[0, 6] pid;
 int[0,5] i;</declaration>
-		<location id="id0" x="119" y="-8">
+		<location id="id0" x="561" y="17">
 		</location>
-		<location id="id1" x="425" y="-8">
+		<location id="id1" x="867" y="17">
 			<committed/>
 		</location>
-		<location id="id2" x="731" y="-8">
+		<location id="id2" x="1173" y="17">
 			<committed/>
 		</location>
-		<location id="id3" x="323" y="196">
+		<location id="id3" x="765" y="221">
 			<committed/>
 		</location>
-		<location id="id4" x="323" y="434">
+		<location id="id4" x="765" y="459">
 			<committed/>
 		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="guard" x="179" y="-101">blocked == 0</label>
-			<label kind="assignment" x="289" y="-93">sem[s]++,
-currentGender = -1</label>
-			<nail x="425" y="-144"/>
+			<label kind="guard" x="697" y="-144">blocked == 0 &amp;&amp; sem[s] &gt; 0</label>
+			<label kind="assignment" x="731" y="-68">sem[s]++</label>
+			<nail x="867" y="-119"/>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id0"/>
-			<label kind="assignment" x="-33" y="434">Queue[blocked] = pid,
+			<label kind="assignment" x="409" y="459">Queue[blocked] = pid,
 blocked++</label>
-			<nail x="-51" y="434"/>
-			<nail x="-51" y="-8"/>
+			<nail x="391" y="459"/>
+			<nail x="391" y="17"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id0"/>
-			<label kind="guard" x="119" y="170">(blocked == 0 &amp;&amp; sem[s] &gt; 0)</label>
-			<label kind="assignment" x="137" y="196">sem[s]--,
+			<label kind="guard" x="561" y="195">(blocked == 0 &amp;&amp; sem[s] &gt; 0)</label>
+			<label kind="assignment" x="579" y="221">sem[s]--,
 ready[pid] = 1</label>
-			<nail x="119" y="196"/>
+			<nail x="561" y="221"/>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id4"/>
-			<label kind="guard" x="323" y="280">sem[s] == 0</label>
+			<label kind="guard" x="765" y="305">sem[s] == 0</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="289" y="68">P[s]?</label>
-			<label kind="assignment" x="289" y="85">pid = ID,
+			<label kind="synchronisation" x="731" y="93">P[s]?</label>
+			<label kind="assignment" x="731" y="110">pid = ID,
 ready[pid] = 0,
 ID = 0</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id0"/>
-			<label kind="guard" x="204" y="-306">i &gt; blocked</label>
-			<label kind="assignment" x="204" y="-272">i = 0</label>
-			<nail x="731" y="-271"/>
-			<nail x="119" y="-271"/>
+			<label kind="guard" x="646" y="-281">i &gt; blocked</label>
+			<label kind="assignment" x="646" y="-247">i = 0</label>
+			<nail x="1173" y="-246"/>
+			<nail x="561" y="-246"/>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id2"/>
-			<label kind="guard" x="807" y="-34">i &lt;= blocked</label>
-			<label kind="assignment" x="807" y="-17">Queue[i] = Queue[i+1],
+			<label kind="guard" x="1249" y="-9">i &lt;= blocked</label>
+			<label kind="assignment" x="1249" y="8">Queue[i] = Queue[i+1],
 i++</label>
-			<nail x="799" y="-42"/>
-			<nail x="799" y="26"/>
+			<nail x="1241" y="-17"/>
+			<nail x="1241" y="51"/>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
-			<label kind="guard" x="459" y="-33">blocked &gt; 0</label>
-			<label kind="assignment" x="442" y="-8">pid = Queue[0], 
+			<label kind="guard" x="901" y="-8">blocked &gt; 0</label>
+			<label kind="assignment" x="884" y="17">pid = Queue[0], 
 ready[pid]=1,
 blocked--, 
 pid = 0</label>
@@ -105,7 +108,7 @@ pid = 0</label>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="263" y="-8">V[s]?</label>
+			<label kind="synchronisation" x="705" y="17">V[s]?</label>
 		</transition>
 	</template>
 	<template>
@@ -124,61 +127,202 @@ pid = 0</label>
 	<template>
 		<name>Person</name>
 		<parameter>const int id, const int gender</parameter>
-		<location id="id6" x="0" y="0">
-			<name x="-59" y="-8">Begin</name>
+		<location id="id6" x="-306" y="-374">
 		</location>
-		<location id="id7" x="204" y="0">
-			<name x="221" y="-8">Wait4CS</name>
+		<location id="id7" x="-306" y="-136">
 		</location>
-		<location id="id8" x="204" y="136">
-			<name x="221" y="127">InCS</name>
+		<location id="id8" x="-306" y="272">
 		</location>
-		<location id="id9" x="0" y="136">
-			<name x="-76" y="127">AfterCS</name>
+		<location id="id9" x="-306" y="374">
+			<name x="-289" y="365">Wait4CS</name>
+		</location>
+		<location id="id10" x="-442" y="374">
+			<name x="-459" y="391">InCS</name>
+		</location>
+		<location id="id11" x="-680" y="374">
+		</location>
+		<location id="id12" x="-748" y="170">
+		</location>
+		<location id="id13" x="-612" y="170">
+		</location>
+		<location id="id14" x="-306" y="-34">
+		</location>
+		<location id="id15" x="-374" y="136">
+		</location>
+		<location id="id16" x="-238" y="136">
+		</location>
+		<location id="id17" x="-612" y="-102">
+		</location>
+		<location id="id18" x="-680" y="-374">
+		</location>
+		<location id="id19" x="-748" y="-102">
+		</location>
+		<location id="id20" x="-748" y="-204">
+		</location>
+		<location id="id21" x="-612" y="-204">
+		</location>
+		<location id="id22" x="-680" y="-306">
+		</location>
+		<location id="id23" x="-748" y="-34">
+		</location>
+		<location id="id24" x="-612" y="-34">
 		</location>
 		<init ref="id6"/>
 		<transition>
-			<source ref="id6"/>
-			<target ref="id6"/>
-			<label kind="guard" x="-76" y="-110">gender != currentGender &amp;&amp; currentGender != -1</label>
-			<nail x="51" y="-85"/>
-			<nail x="-68" y="-85"/>
+			<source ref="id24"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-603" y="-85">ready[id]==1</label>
+			<label kind="synchronisation" x="-637" y="-68">Go?</label>
+			<label kind="assignment" x="-603" y="-68">ready[id]=0</label>
 		</transition>
 		<transition>
-			<source ref="id9"/>
-			<target ref="id6"/>
-			<label kind="synchronisation" x="-25" y="68">Go?</label>
+			<source ref="id23"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-833" y="-85">ready[id]==1</label>
+			<label kind="synchronisation" x="-739" y="-68">Go?</label>
+			<label kind="assignment" x="-833" y="-68">ready[id]=0</label>
 		</transition>
 		<transition>
-			<source ref="id8"/>
-			<target ref="id9"/>
-			<label kind="synchronisation" x="25" y="110">V[0]!</label>
+			<source ref="id22"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-680" y="-348">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-646" y="-272">V[1]!</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-748" y="-272">V[1]!</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-603" y="-170">Go?</label>
+			<label kind="assignment" x="-603" y="-153">insideFemale--</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-833" y="-170">Go?</label>
+			<label kind="assignment" x="-833" y="-153">insideMale--</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-662" y="-391">Go?</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-255" y="195">V[1]!</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-382" y="187">V[1]!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-272" y="25">gender == 0</label>
+			<label kind="synchronisation" x="-288" y="34">Go?</label>
+			<label kind="assignment" x="-255" y="59">insideMale++</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-433" y="34">gender == 1</label>
+			<label kind="synchronisation" x="-348" y="38">Go?</label>
+			<label kind="assignment" x="-476" y="59">insideFemale++</label>
+			<nail x="-323" y="-25"/>
 		</transition>
 		<transition>
 			<source ref="id7"/>
-			<target ref="id8"/>
-			<label kind="guard" x="204" y="34">ready[id]==1</label>
-			<label kind="synchronisation" x="204" y="51">Go?</label>
-			<label kind="assignment" x="204" y="68">ready[id]=0</label>
+			<target ref="id14"/>
+			<label kind="guard" x="-391" y="-119">ready[id]==1</label>
+			<label kind="synchronisation" x="-306" y="-102">Go?</label>
+			<label kind="assignment" x="-391" y="-93">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-824" y="34">P[1]!</label>
+			<label kind="assignment" x="-824" y="51">ID=id,
+ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-603" y="34">P[1]!</label>
+			<label kind="assignment" x="-603" y="51">ID=id,
+ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-629" y="246">gender == 1</label>
+			<label kind="synchronisation" x="-671" y="246">Go?</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-799" y="255">gender == 0</label>
+			<label kind="synchronisation" x="-714" y="238">Go?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-51" y="-204">gender == 0 &amp;&amp; insideFemale &gt; 0</label>
+			<label kind="synchronisation" x="-170" y="-127">V[1]!</label>
+			<nail x="34" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-297" y="-229">gender == 1 &amp;&amp; insideMale &gt; 0</label>
+			<label kind="synchronisation" x="-170" y="-255">V[1]!</label>
+			<nail x="-110" y="-254"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-662" y="357">Go?</label>
 		</transition>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id7"/>
-			<label kind="guard" x="42" y="-42">currentGender == gender  || currentGender == -1</label>
-			<label kind="synchronisation" x="42" y="-17">P[0]!</label>
-			<label kind="assignment" x="42" y="0">ID=id,
-ready[id]=0,
-currentGender = gender</label>
+			<label kind="synchronisation" x="-391" y="-297">P[1]!</label>
+			<label kind="assignment" x="-391" y="-272">ID=id,
+ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-408" y="340">ready[id]==1</label>
+			<label kind="synchronisation" x="-408" y="374">Go?</label>
+			<label kind="assignment" x="-408" y="357">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-297" y="289">P[0]!</label>
+			<label kind="assignment" x="-297" y="306">ID=id,
+ready[id]=0</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
 Semaphore1 = Semaphore(0);
+Mutex = Semaphore(1);
 Erik = Person(0, 0);
 Julia = Person(1, 1);
 Ines = Person(2, 1);
 Charlie = Person(3, 0);
+
 // List one or more processes to be composed into a system.
-system Semaphore1, Erik, Julia, Ines, Charlie, Progression;
+system Semaphore1, Mutex, Erik, Julia, Ines, Charlie, Progression;
 </system>
 	<queries>
 		<query>
