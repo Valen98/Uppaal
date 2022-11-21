@@ -46,8 +46,8 @@ int[0,5] i;</declaration>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="guard" x="697" y="-144">blocked == 0 &amp;&amp; sem[s] &gt; 0</label>
-			<label kind="assignment" x="731" y="-68">sem[s]++</label>
+			<label kind="guard" x="697" y="-110">blocked == 0</label>
+			<label kind="assignment" x="697" y="-93">sem[s]++</label>
 			<nail x="867" y="-119"/>
 		</transition>
 		<transition>
