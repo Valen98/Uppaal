@@ -17,7 +17,6 @@ int[0, maxProcesses] ID;
 urgent chan V[numSemaphores];
 urgent chan P[numSemaphores];
 urgent chan Go;
-urgent chan take_seat, leave_seat;
 
 // [0] = mutex, [1]= bathroom
 int [0, 2] sem[numSemaphores] = { 1 , 2 };</declaration>
@@ -138,39 +137,42 @@ pid = 0</label>
 		</location>
 		<location id="id9" x="136" y="-204">
 		</location>
-		<location id="id10" x="272" y="34">
-			<name x="297" y="25">InBathroom</name>
+		<location id="id10" x="136" y="442">
+			<name x="59" y="450">InBathroom</name>
 		</location>
-		<location id="id11" x="-272" y="170">
+		<location id="id11" x="-272" y="204">
 		</location>
 		<location id="id12" x="476" y="170">
 		</location>
 		<location id="id13" x="714" y="476">
 		</location>
-		<location id="id14" x="-408" y="170">
+		<location id="id14" x="-408" y="204">
 		</location>
 		<location id="id15" x="136" y="-374">
 		</location>
-		<location id="id16" x="272" y="170">
-			<name x="161" y="178">WaitLeaveSeat</name>
+		<location id="id16" x="374" y="442">
+			<name x="348" y="459">WaitLeaveSeat</name>
 		</location>
-		<location id="id17" x="-34" y="33">
-			<name x="-34" y="51">TakeSeat</name>
+		<location id="id17" x="136" y="204">
+			<name x="161" y="195">TakeSeat</name>
+		</location>
+		<location id="id18" x="136" y="314">
 		</location>
 		<init ref="id6"/>
 		<transition>
 			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="144" y="246">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
 			<target ref="id10"/>
-			<label kind="guard" x="102" y="8">ready[id]==1</label>
-			<label kind="synchronisation" x="102" y="42">P[1]!</label>
-			<label kind="assignment" x="102" y="59">ready[id]==0</label>
+			<label kind="synchronisation" x="102" y="34">P[1]!</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
 			<target ref="id12"/>
-			<label kind="guard" x="331" y="144">ready[0]==1</label>
-			<label kind="synchronisation" x="331" y="170">P[0]!</label>
-			<label kind="assignment" x="331" y="187">ready[0]==0</label>
+			<label kind="synchronisation" x="382" y="306">P[0]!</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
@@ -185,9 +187,9 @@ pid = 0</label>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id14"/>
-			<label kind="guard" x="-357" y="170">nf &gt; 0</label>
-			<label kind="synchronisation" x="-357" y="187">Go?</label>
-			<nail x="-374" y="170"/>
+			<label kind="guard" x="-348" y="161">nf &gt; 0</label>
+			<label kind="synchronisation" x="-348" y="178">Go?</label>
+			<nail x="-340" y="204"/>
 		</transition>
 		<transition>
 			<source ref="id9"/>
@@ -237,7 +239,7 @@ pid = 0</label>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id16"/>
-			<label kind="synchronisation" x="238" y="93">V[1]!</label>
+			<label kind="synchronisation" x="238" y="416">V[1]!</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
@@ -286,7 +288,7 @@ system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex;
 </system>
 	<queries>
 		<query>
-			<formula>E&lt;&gt; occupiedSeats == 2</formula>
+			<formula>E&lt;&gt; (sem[1] == 2)</formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -318,7 +320,7 @@ system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex;
 			<comment>Check if Erik can enter his CS</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; not (Erik.InCS &amp;&amp; Julia.InCS)</formula>
+			<formula>E&lt;&gt; not (Erik.InBathroom &amp;&amp; Julia.InBathroom)</formula>
 			<comment>Check if Erik and Julia cannot be inside the Critical Section at the same time</comment>
 		</query>
 		<query>
