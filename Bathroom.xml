@@ -138,8 +138,8 @@ pid = 0</label>
 		</location>
 		<location id="id9" x="136" y="-204">
 		</location>
-		<location id="id10" x="272" y="34">
-			<name x="297" y="25">InBathroom</name>
+		<location id="id10" x="102" y="170">
+			<name x="25" y="187">InBathroom</name>
 		</location>
 		<location id="id11" x="-272" y="170">
 		</location>
@@ -151,26 +151,29 @@ pid = 0</label>
 		</location>
 		<location id="id15" x="136" y="-374">
 		</location>
-		<location id="id16" x="272" y="170">
-			<name x="161" y="178">WaitLeaveSeat</name>
+		<location id="id16" x="306" y="170">
+			<name x="204" y="187">WaitLeaveSeat</name>
 		</location>
-		<location id="id17" x="-34" y="33">
-			<name x="-34" y="51">TakeSeat</name>
+		<location id="id17" x="-68" y="0">
+			<name x="-144" y="-17">TakeSeat</name>
+		</location>
+		<location id="id18" x="102" y="0">
 		</location>
 		<init ref="id6"/>
 		<transition>
 			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-8" y="8">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
 			<target ref="id10"/>
-			<label kind="guard" x="102" y="8">ready[id]==1</label>
-			<label kind="synchronisation" x="102" y="42">P[1]!</label>
-			<label kind="assignment" x="102" y="59">ready[id]==0</label>
+			<label kind="synchronisation" x="110" y="59">P[1]!</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
 			<target ref="id12"/>
-			<label kind="guard" x="331" y="144">ready[0]==1</label>
 			<label kind="synchronisation" x="331" y="170">P[0]!</label>
-			<label kind="assignment" x="331" y="187">ready[0]==0</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
@@ -199,9 +202,9 @@ pid = 0</label>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id17"/>
-			<label kind="guard" x="76" y="-102">nm == 0</label>
-			<label kind="synchronisation" x="76" y="-85">Go?</label>
-			<label kind="assignment" x="76" y="-68">nf++</label>
+			<label kind="guard" x="51" y="-110">nm == 0</label>
+			<label kind="synchronisation" x="51" y="-93">Go?</label>
+			<label kind="assignment" x="51" y="-76">nf++</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
@@ -237,7 +240,7 @@ pid = 0</label>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id16"/>
-			<label kind="synchronisation" x="238" y="93">V[1]!</label>
+			<label kind="synchronisation" x="178" y="144">V[1]!</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
@@ -275,18 +278,18 @@ Erik = Person(0, 0);
 Julia = Person(1, 1);
 Ines = Person(2, 1);
 Charlie = Person(3, 0);
-//Karin = Person(4, 1);
-//Kalle = Person(5, 0);
+Karin = Person(4, 1);
+Kalle = Person(5, 0);
 
 Mutex = Semaphore(0);
 Bathroom = Semaphore(1);
 
 // List one or more processes to be composed into a system.
-system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex;
+system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex, Karin, Kalle;
 </system>
 	<queries>
 		<query>
-			<formula>E&lt;&gt; occupiedSeats == 2</formula>
+			<formula>E[] sem[1] == 0</formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -318,7 +321,7 @@ system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex;
 			<comment>Check if Erik can enter his CS</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; not (Erik.InCS &amp;&amp; Julia.InCS)</formula>
+			<formula>E&lt;&gt; not (Erik.InBathroom &amp;&amp; Julia.InBathroom)</formula>
 			<comment>Check if Erik and Julia cannot be inside the Critical Section at the same time</comment>
 		</query>
 		<query>
