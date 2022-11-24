@@ -137,69 +137,64 @@ pid = 0</label>
 		</location>
 		<location id="id9" x="136" y="-204">
 		</location>
-<<<<<<< HEAD
-		<location id="id10" x="102" y="170">
-			<name x="25" y="187">InBathroom</name>
-=======
-		<location id="id10" x="136" y="442">
-			<name x="59" y="450">InBathroom</name>
->>>>>>> 09e080f3e335b1df7cf31a52837e8294e36283c8
+		<location id="id10" x="340" y="374">
 		</location>
 		<location id="id11" x="-272" y="204">
 		</location>
-		<location id="id12" x="476" y="170">
+		<location id="id12" x="-340" y="374">
 		</location>
-		<location id="id13" x="714" y="476">
+		<location id="id13" x="-476" y="442">
 		</location>
 		<location id="id14" x="-408" y="204">
 		</location>
 		<location id="id15" x="136" y="-374">
 		</location>
-<<<<<<< HEAD
-		<location id="id16" x="306" y="170">
-			<name x="204" y="187">WaitLeaveSeat</name>
-		</location>
-		<location id="id17" x="-68" y="0">
-			<name x="-144" y="-17">TakeSeat</name>
-		</location>
-		<location id="id18" x="102" y="0">
-=======
-		<location id="id16" x="374" y="442">
-			<name x="348" y="459">WaitLeaveSeat</name>
+		<location id="id16" x="0" y="374">
+			<name x="-42" y="340">WaitLeaveSeat</name>
 		</location>
 		<location id="id17" x="136" y="204">
-			<name x="161" y="195">TakeSeat</name>
 		</location>
-		<location id="id18" x="136" y="314">
->>>>>>> 09e080f3e335b1df7cf31a52837e8294e36283c8
+		<location id="id18" x="340" y="204">
+			<name x="348" y="170">InQueue</name>
+		</location>
+		<location id="id19" x="136" y="374">
+			<name x="110" y="340">InBathroom</name>
+		</location>
+		<location id="id20" x="-170" y="374">
 		</location>
 		<init ref="id6"/>
 		<transition>
+			<source ref="id20"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-306" y="374">ready[id]==1</label>
+			<label kind="synchronisation" x="-306" y="391">Go?</label>
+			<label kind="assignment" x="-306" y="408">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id19"/>
+			<label kind="guard" x="212" y="374">ready[id]==1</label>
+			<label kind="synchronisation" x="212" y="391">Go?</label>
+			<label kind="assignment" x="212" y="408">ready[id] = 0</label>
+		</transition>
+		<transition>
 			<source ref="id17"/>
 			<target ref="id18"/>
-<<<<<<< HEAD
-			<label kind="synchronisation" x="-8" y="8">V[0]!</label>
-=======
-			<label kind="synchronisation" x="144" y="246">V[0]!</label>
->>>>>>> 09e080f3e335b1df7cf31a52837e8294e36283c8
+			<label kind="synchronisation" x="204" y="212">V[0]!</label>
 		</transition>
 		<transition>
 			<source ref="id18"/>
 			<target ref="id10"/>
-<<<<<<< HEAD
-			<label kind="synchronisation" x="110" y="59">P[1]!</label>
-=======
-			<label kind="synchronisation" x="102" y="34">P[1]!</label>
->>>>>>> 09e080f3e335b1df7cf31a52837e8294e36283c8
+			<label kind="synchronisation" x="348" y="246">P[1]!</label>
+			<label kind="assignment" x="348" y="263">ID=id,
+ready[id] = 0</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
-			<target ref="id12"/>
-<<<<<<< HEAD
-			<label kind="synchronisation" x="331" y="170">P[0]!</label>
-=======
-			<label kind="synchronisation" x="382" y="306">P[0]!</label>
->>>>>>> 09e080f3e335b1df7cf31a52837e8294e36283c8
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-127" y="374">P[0]!</label>
+			<label kind="assignment" x="-127" y="391">ID=id,
+ready[id] = 0</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
@@ -242,35 +237,31 @@ pid = 0</label>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id6"/>
-			<label kind="synchronisation" x="-119" y="544">V[0]!</label>
-			<nail x="714" y="544"/>
-			<nail x="-476" y="544"/>
+			<label kind="synchronisation" x="-586" y="102">V[0]!</label>
+			<nail x="-544" y="442"/>
+			<nail x="-544" y="-204"/>
 			<nail x="-476" y="-204"/>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id13"/>
-			<label kind="guard" x="722" y="289">gender == 1</label>
-			<label kind="synchronisation" x="722" y="323">Go?</label>
-			<label kind="assignment" x="722" y="306">nf--</label>
-			<nail x="714" y="170"/>
+			<label kind="guard" x="-450" y="314">gender == 1</label>
+			<label kind="synchronisation" x="-450" y="348">Go?</label>
+			<label kind="assignment" x="-450" y="331">nf--</label>
+			<nail x="-476" y="374"/>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id13"/>
-			<label kind="guard" x="484" y="289">gender == 0</label>
-			<label kind="synchronisation" x="484" y="323">Go?</label>
-			<label kind="assignment" x="484" y="306">nm--</label>
-			<nail x="476" y="476"/>
+			<label kind="guard" x="-433" y="442">gender == 0</label>
+			<label kind="synchronisation" x="-433" y="476">Go?</label>
+			<label kind="assignment" x="-433" y="459">nm--</label>
+			<nail x="-340" y="442"/>
 		</transition>
 		<transition>
-			<source ref="id10"/>
+			<source ref="id19"/>
 			<target ref="id16"/>
-<<<<<<< HEAD
-			<label kind="synchronisation" x="178" y="144">V[1]!</label>
-=======
-			<label kind="synchronisation" x="238" y="416">V[1]!</label>
->>>>>>> 09e080f3e335b1df7cf31a52837e8294e36283c8
+			<label kind="synchronisation" x="51" y="374">V[1]!</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
@@ -319,48 +310,28 @@ system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex, Karin, Kalle;
 </system>
 	<queries>
 		<query>
-<<<<<<< HEAD
-			<formula>E[] sem[1] == 0</formula>
-=======
+			<formula>E&lt;&gt; ! (nm &gt; 2 || nf &gt; 2)</formula>
+			<comment></comment>
+		</query>
+		<query>
 			<formula>E&lt;&gt; (sem[1] == 2)</formula>
->>>>>>> 09e080f3e335b1df7cf31a52837e8294e36283c8
 			<comment></comment>
 		</query>
 		<query>
-			<formula>A[] (Erik.Wait4CS &amp;&amp; Charlie.Wait4CS)</formula>
+			<formula>E&lt;&gt; (Erik.InQueue &amp;&amp; Charlie.InQueue)</formula>
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Erik.Wait4CS &amp;&amp; Charlie.Wait4CS)</formula>
+			<formula>E&lt;&gt; not (Erik.InQueue &amp;&amp; Julia.InQueue)</formula>
 			<comment></comment>
-		</query>
-		<query>
-			<formula>E&lt;&gt; not (Erik.Wait4CS &amp;&amp; Julia.Wait4CS)</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>E&lt;&gt; not (sem[0] &gt; 1 &amp;&amp; sem[0]&lt; 0)</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>A[] not (sem[0] &gt; 1 &amp;&amp; sem[0] &lt; 0)</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>Julia.Wait4CS --&gt; Julia.InCS</formula>
-			<comment>Check if Julia can enter his CS</comment>
-		</query>
-		<query>
-			<formula>Erik.Wait4CS --&gt; Erik.InCS</formula>
-			<comment>Check if Erik can enter his CS</comment>
 		</query>
 		<query>
 			<formula>E&lt;&gt; not (Erik.InBathroom &amp;&amp; Julia.InBathroom)</formula>
-			<comment>Check if Erik and Julia cannot be inside the Critical Section at the same time</comment>
+			<comment>Ensure that Erik and Julia cannot be inside the Critical Section at the same time, for any path.</comment>
 		</query>
 		<query>
 			<formula>A[] ! deadlock</formula>
-			<comment>Check if there is a deadlock for all states.</comment>
+			<comment>Ensure that there are no deadlocks for any path.</comment>
 		</query>
 	</queries>
 </nta>
