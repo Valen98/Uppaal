@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+const int maxProcesses = 6;
+//Amount of semaphores
+const int numSemaphores = 4;
+
+int[0,maxProcesses] ready[maxProcesses];
+int[0,maxProcesses] ID;
+urgent chan V[numSemaphores];
+urgent chan P[numSemaphores];
+urgent chan Go;
+
+const int choco = 1;
+const int egg = 2;
+const int cream = 3;
+
+int [0,1] sem[numSemaphores] = {1, 0, 0, 0};</declaration>
+	<template>
+		<name x="5" y="5">Semaphore</name>
+		<parameter>const int s</parameter>
+		<declaration>// Place local declarations here.
+
+int[0, 6] blocked = 0;
+int[0,6] Queue[6];
+int[0, 5] pid;
+int[0,5] i;</declaration>
+		<location id="id0" x="119" y="-8">
+		</location>
+		<location id="id1" x="425" y="-8">
+			<committed/>
+		</location>
+		<location id="id2" x="731" y="-8">
+			<committed/>
+		</location>
+		<location id="id3" x="323" y="196">
+			<committed/>
+		</location>
+		<location id="id4" x="323" y="434">
+			<committed/>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="179" y="-101">blocked == 0</label>
+			<label kind="assignment" x="179" y="-76">sem[s]++</label>
+			<nail x="425" y="-144"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-33" y="434">Queue[blocked] = pid,
+blocked++</label>
+			<nail x="-51" y="434"/>
+			<nail x="-51" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="guard" x="137" y="162">blocked == 0 &amp;&amp; sem[s] &gt; 0</label>
+			<label kind="assignment" x="137" y="196">sem[s]--,
+ready[pid] = 1</label>
+			<nail x="119" y="196"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="guard" x="323" y="281">sem[s] == 0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="289" y="68">P[s]?</label>
+			<label kind="assignment" x="289" y="85">pid = ID,
+ready[pid] = 0,
+ID = 0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="204" y="-306">i &gt; blocked</label>
+			<label kind="assignment" x="204" y="-272">i = 0</label>
+			<nail x="731" y="-271"/>
+			<nail x="119" y="-271"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="guard" x="807" y="-34">i &lt;= blocked</label>
+			<label kind="assignment" x="807" y="-17">Queue[i] = Queue[i+1],
+i++</label>
+			<nail x="799" y="-42"/>
+			<nail x="799" y="26"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="459" y="-33">blocked &gt; 0</label>
+			<label kind="assignment" x="442" y="-8">pid = Queue[0], 
+ready[pid]=1,
+blocked--, 
+pid = 0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="263" y="-8">V[s]?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Agent</name>
+		<parameter>const int id, const int ingredient1, const int ingredient2</parameter>
+		<location id="id5" x="-102" y="-42">
+			<name x="-119" y="-76">Begin</name>
+		</location>
+		<location id="id6" x="102" y="-42">
+			<name x="119" y="-50">Wait4CS</name>
+		</location>
+		<location id="id7" x="102" y="94">
+			<name x="119" y="85">InCS</name>
+		</location>
+		<location id="id8" x="102" y="170">
+		</location>
+		<location id="id9" x="-102" y="170">
+			<name x="-170" y="161">AfterCS</name>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-102" y="47">Go?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-42" y="187">V[ingredient2]!</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="110" y="119">V[ingredient1]!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="guard" x="102" y="-8">ready[id]==1</label>
+			<label kind="synchronisation" x="102" y="9">Go?</label>
+			<label kind="assignment" x="102" y="26">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-59" y="-68">P[0]!</label>
+			<label kind="assignment" x="-60" y="-42">ID=id,
+ready[id]=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Chef</name>
+		<parameter>const int id, const int ingredient1, const int ingredient2</parameter>
+		<location id="id10" x="102" y="-42">
+			<name x="119" y="-50">Wait4CS</name>
+		</location>
+		<location id="id11" x="102" y="94">
+			<name x="119" y="85">InCS</name>
+		</location>
+		<location id="id12" x="-102" y="-136">
+			<name x="-112" y="-170">Begin</name>
+		</location>
+		<location id="id13" x="102" y="-136">
+		</location>
+		<location id="id14" x="102" y="272">
+		</location>
+		<location id="id15" x="102" y="170">
+		</location>
+		<init ref="id12"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-93" y="110">Go?</label>
+			<nail x="-102" y="272"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="110" y="221">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id15"/>
+			<label kind="guard" x="102" y="102">ready[id]==1</label>
+			<label kind="synchronisation" x="102" y="119">Go?</label>
+			<label kind="assignment" x="102" y="136">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id10"/>
+			<label kind="guard" x="110" y="-119">ready[id]==1</label>
+			<label kind="synchronisation" x="110" y="-102">Go?</label>
+			<label kind="assignment" x="110" y="-85">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-59" y="-153">P[ingredient1]!</label>
+			<label kind="assignment" x="-59" y="-136">ID=id,ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="102" y="9">P[ingredient2]!</label>
+			<label kind="assignment" x="102" y="26">ID=id,ready[id]=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Progression</name>
+		<location id="id16" x="0" y="0">
+		</location>
+		<init ref="id16"/>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="42" y="0">Go!</label>
+			<nail x="68" y="34"/>
+			<nail x="68" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Process</name>
+		<parameter>const int id</parameter>
+		<location id="id17" x="0" y="0">
+			<name x="-17" y="-34">Begin</name>
+		</location>
+		<location id="id18" x="204" y="0">
+			<name x="221" y="-8">Wait4CS</name>
+		</location>
+		<location id="id19" x="204" y="136">
+			<name x="221" y="127">InCS</name>
+		</location>
+		<location id="id20" x="0" y="136">
+			<name x="-76" y="127">AfterCS</name>
+		</location>
+		<init ref="id17"/>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-25" y="68">Go?</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="25" y="110">V[0]!</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="guard" x="204" y="34">ready[id]==1</label>
+			<label kind="synchronisation" x="204" y="51">Go?</label>
+			<label kind="assignment" x="204" y="68">ready[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="42" y="-17">P[0]!</label>
+			<label kind="assignment" x="42" y="0">ID=id,
+ready[id]=0</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+TableSem = Semaphore(0);
+ChocoSem = Semaphore(1);
+EggSem = Semaphore(2);
+CreamSem = Semaphore(3);
+
+//All agents
+ChocoEggAgent = Agent(0, choco, egg);
+ChocoCreamAgent = Agent(1, choco, cream);
+EggCreamAgent = Agent(2, egg, cream);
+
+//All Chefs
+ChefChoco = Chef(3, cream, egg);
+ChefEgg = Chef(4, choco, cream);
+ChefCream = Chef(5, choco, egg);
+
+// List one or more processes to be composed into a system.
+system TableSem, ChocoSem, EggSem, CreamSem, ChocoEggAgent, ChocoCreamAgent, EggCreamAgent, ChefChoco, ChefEgg, ChefCream, Progression;
+</system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; not (sem[0] &gt; 1 &amp;&amp; sem[0]&lt; 0)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not (sem[0] &gt; 1 &amp;&amp; sem[0] &lt; 0)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>Julia.Wait4CS --&gt; Julia.InCS</formula>
+			<comment>Check if Julia can enter his CS</comment>
+		</query>
+		<query>
+			<formula>Erik.Wait4CS --&gt; Erik.InCS</formula>
+			<comment>Check if Erik can enter his CS</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not (Erik.InCS &amp;&amp; Julia.InCS)</formula>
+			<comment>Check if Erik and Julia cannot be inside the Critical Section at the same time</comment>
+		</query>
+		<query>
+			<formula>A[] ! deadlock</formula>
+			<comment>Check if there is a deadlock for all states.</comment>
+		</query>
+	</queries>
+</nta>

@@ -2,11 +2,9 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
-const int maxProcesses = 4;
+const int maxProcesses = 7;
 //Amount of semaphores
 const int numSemaphores = 2;
-int GENDER;
-int currentGender = -1;
 int insideMale = 0;
 int insideFemale = 0;
 int blockedMale = 0;
@@ -25,8 +23,8 @@ int [0,2] sem[numSemaphores] = {2,1};
 		<declaration>// Place local declarations here.
 
 int[0, 8] blocked = 0;
-int[0,6] Queue[6];
-int[0, 6] pid;
+int[0,7] Queue[7];
+int[0,7] pid;
 int[0,5] i;</declaration>
 		<location id="id0" x="561" y="17">
 		</location>
@@ -227,14 +225,14 @@ pid = 0</label>
 		<transition>
 			<source ref="id14"/>
 			<target ref="id16"/>
-			<label kind="guard" x="-272" y="25">gender == 0</label>
+			<label kind="guard" x="-289" y="-8">gender == 0 &amp;&amp; insideFemale == 0</label>
 			<label kind="synchronisation" x="-288" y="34">Go?</label>
 			<label kind="assignment" x="-255" y="59">insideMale++</label>
 		</transition>
 		<transition>
 			<source ref="id14"/>
 			<target ref="id15"/>
-			<label kind="guard" x="-433" y="34">gender == 1</label>
+			<label kind="guard" x="-535" y="8">gender == 1 &amp;&amp; insideMale == 0</label>
 			<label kind="synchronisation" x="-348" y="38">Go?</label>
 			<label kind="assignment" x="-476" y="59">insideFemale++</label>
 			<nail x="-323" y="-25"/>
@@ -320,9 +318,11 @@ Erik = Person(0, 0);
 Julia = Person(1, 1);
 Ines = Person(2, 1);
 Charlie = Person(3, 0);
+Karin = Person(4,1);
+Kalle = Person(5,0);
 
 // List one or more processes to be composed into a system.
-system Semaphore1, Mutex, Erik, Julia, Ines, Charlie, Progression;
+system Semaphore1, Mutex, Erik, Julia, Ines, Charlie, Karin, Kalle, Progression;
 </system>
 	<queries>
 		<query>
@@ -330,7 +330,7 @@ system Semaphore1, Mutex, Erik, Julia, Ines, Charlie, Progression;
 			<comment></comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Erik.Wait4CS &amp;&amp; Charlie.Wait4CS)</formula>
+			<formula>E&lt;&gt; (Erik.InCS &amp;&amp; Charlie.InCS)</formula>
 			<comment></comment>
 		</query>
 		<query>
