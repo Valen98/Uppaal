@@ -196,7 +196,7 @@ system  ChefChoco, ChefEgg, ChefCream, Progression,  Server1, ChocoChan, EggChan
 		</query>
 		<query>
 			<formula>E&lt;&gt; ! (Server1.localMSG[0]==ChefChoco.ID &amp;&amp; (Server1.localMSG[1]==choco || Server1.localMSG[2]==choco))</formula>
-			<comment>There is no path where a state where the server produces the chefs owned ingredient </comment>
+			<comment>There is no path with a state where the server produces the chefs own ingredient </comment>
 		</query>
 		<query>
 			<formula>Server1.localMSG[0]==ChefChoco.ID &amp;&amp; Server1.localMSG[1]==ChefChoco.ingredient1 &amp;&amp; Server1.localMSG[2]==ChefChoco.ingredient2 --&gt; ChefChoco.CookingAndEating</formula>
@@ -208,19 +208,19 @@ system  ChefChoco, ChefEgg, ChefCream, Progression,  Server1, ChocoChan, EggChan
 		</query>
 		<query>
 			<formula>ChefChoco.IngredientsRecieved --&gt; ChefChoco.CookingAndEating</formula>
-			<comment>Check if there is always true that the chef will recieve ingredients and starts cookingEating</comment>
+			<comment>Check if there is always true that the chef will recieve ingredients and starts cookingEating. Should return true but the chef is not enforced to progress and could stall even if the chef got their ingredients. Therefore, this returns false.</comment>
 		</query>
 		<query>
 			<formula>A[] ! (ChefEgg.ingredients[0]==egg || ChefEgg.ingredients[1]==egg)</formula>
-			<comment>Is there any possible way the ChefEgg can receive the ingredient he already has which is Egg. The given query shall always result to true</comment>
+			<comment>Is there no possible way the ChefEgg can receive the ingredient he already has which is Egg. The given query shall always result to true</comment>
 		</query>
 		<query>
 			<formula>A[] ! (ChefCream.ingredients[0]==cream || ChefCream.ingredients[1]==cream)</formula>
-			<comment>Is there any possible way the ChefCream can receive the ingredient he already has which is Cream. The given query shall always result to true</comment>
+			<comment>Is there no possible way the ChefCream can receive the ingredient he already has which is Cream. The given query shall always result to true</comment>
 		</query>
 		<query>
 			<formula>A[] ! (ChefChoco.ingredients[0]==choco || ChefChoco.ingredients[1]==choco)</formula>
-			<comment>Is there any possible way the chefchoco can receive the ingredient he already has which is choco. The given query shall always result to true</comment>
+			<comment>Is there no possible way the chefchoco can receive the ingredient he already has which is choco. The given query shall always result to true</comment>
 		</query>
 		<query>
 			<formula>A[] ! ChefChoco.CookingAndEating || (ChefChoco.ingredients[0]==egg &amp;&amp; ChefChoco.ingredients[1]==cream)</formula>

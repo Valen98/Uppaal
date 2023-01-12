@@ -27,7 +27,7 @@ chan Recieve[numChan+1];
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="synchronisation" x="34" y="-17">Send[0]!</label>
+			<label kind="synchronisation" x="34" y="-17">Send[3]!</label>
 		</transition>
 	</template>
 	<template>
@@ -58,39 +58,40 @@ chan Recieve[numChan+1];
 		<transition>
 			<source ref="id2"/>
 			<target ref="id3"/>
-			<label kind="synchronisation" x="-84" y="-59">Recieve[0]?</label>
+			<label kind="synchronisation" x="-84" y="-59">Recieve[3]?</label>
 		</transition>
 	</template>
 	<template>
 		<name>Chef</name>
 		<parameter>const int ChID</parameter>
 		<declaration>int ingredient[arg];</declaration>
-		<location id="id5" x="-102" y="-136">
-			<name x="-112" y="-170">Waiting4Ingredients</name>
+		<location id="id5" x="-365" y="-323">
+			<name x="-375" y="-357">Waiting4Ingredients</name>
 		</location>
-		<location id="id6" x="102" y="0">
-			<name x="110" y="-25">CookingAndEating</name>
+		<location id="id6" x="-161" y="-187">
+			<name x="-153" y="-212">CookingAndEating</name>
 		</location>
-		<location id="id7" x="102" y="-136">
-			<name x="119" y="-145">IngredientsRecieved</name>
+		<location id="id7" x="-161" y="-323">
+			<name x="-144" y="-332">IngredientsRecieved</name>
 		</location>
 		<init ref="id5"/>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id7"/>
-			<label kind="synchronisation" x="-84" y="-153">Recieve[ChID]?</label>
-			<label kind="assignment" x="-85" y="-136">ingredient[ChID]=msg[ChID]</label>
+			<label kind="synchronisation" x="-347" y="-340">Recieve[ChID]?</label>
+			<label kind="assignment" x="-348" y="-323">ingredient[ChID]=msg[ChID]</label>
 		</transition>
 		<transition>
 			<source ref="id6"/>
 			<target ref="id5"/>
-			<label kind="synchronisation" x="-68" y="8">Go?</label>
-			<nail x="-102" y="0"/>
+			<label kind="synchronisation" x="-331" y="-179">Go?</label>
+			<nail x="-365" y="-187"/>
 		</transition>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id6"/>
-			<label kind="synchronisation" x="110" y="-68">Send[0]!</label>
+			<label kind="synchronisation" x="-153" y="-255">Send[3]!</label>
+			<label kind="assignment" x="-153" y="-229">msg[ChID]=0, ingredient[ChID]=0</label>
 		</transition>
 	</template>
 	<template>
@@ -175,10 +176,10 @@ ChefCream = Chef(chocoEgg);
 
 
 //Channel
-ChocoEggChan = Channel(1);
-ChocoCreamChan = Channel(2);
-CreamEggChan = Channel(3);
-TableChan = Channel(0);
+ChocoEggChan = Channel(0);
+ChocoCreamChan = Channel(1);
+CreamEggChan = Channel(2);
+TableChan = Channel(3);
 
 
 
@@ -187,24 +188,20 @@ system ChocoEggAgent, ChocoCreamAgent, EggCreamAgent, ChefChoco, ChefEgg, ChefCr
 </system>
 	<queries>
 		<query>
-			<formula>E&lt;&gt; not (sem[0] &gt; 1 &amp;&amp; sem[0]&lt; 0)</formula>
-			<comment></comment>
+			<formula>A[] !(ChefChoco.Waiting4Ingredients &amp;&amp; ChefChoco.ingredient[eggCream] == eggCream)</formula>
+			<comment>Check if the chef ChefChoco will always have no ingredients when the chef is waiting for ingredients. Should always be true.</comment>
 		</query>
 		<query>
-			<formula>A[] not (sem[0] &gt; 1 &amp;&amp; sem[0] &lt; 0)</formula>
-			<comment></comment>
+			<formula>A[] ! (ChefChoco.IngredientsRecieved &amp;&amp; ChefEgg.IngredientsRecieved)</formula>
+			<comment>Check mutual exclusion that two chefs cannot receive ingredient simultaneously. Should always return true.</comment>
 		</query>
 		<query>
-			<formula>Julia.Wait4CS --&gt; Julia.InCS</formula>
-			<comment>Check if Julia can enter his CS</comment>
+			<formula>A[] ! (ChefChoco.ingredient[eggCream]==chocoEgg  || ChefChoco.ingredient[eggCream]==chocoCream) </formula>
+			<comment>Is there no possible way the chefchoco can receive the ingredient he already has which is choco. The given query shall always result to true</comment>
 		</query>
 		<query>
-			<formula>Erik.Wait4CS --&gt; Erik.InCS</formula>
-			<comment>Check if Erik can enter his CS</comment>
-		</query>
-		<query>
-			<formula>E&lt;&gt; not (Erik.InCS &amp;&amp; Julia.InCS)</formula>
-			<comment>Check if Erik and Julia cannot be inside the Critical Section at the same time</comment>
+			<formula>ChefChoco.IngredientsRecieved --&gt; ChefChoco.CookingAndEating</formula>
+			<comment>Check if there is always true that the chef will recieve ingredients and starts cookingEating. Should return true but the chef is not enforced to progress and could stall even if the chef got their ingredients. Therefore, this returns false.</comment>
 		</query>
 		<query>
 			<formula>A[] ! deadlock</formula>

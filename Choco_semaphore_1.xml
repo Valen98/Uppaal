@@ -230,41 +230,41 @@ ready[id]=0</label>
 	<template>
 		<name>Process</name>
 		<parameter>const int id</parameter>
-		<location id="id17" x="0" y="0">
-			<name x="-17" y="-34">Begin</name>
+		<location id="id17" x="153" y="51">
+			<name x="136" y="17">Begin</name>
 		</location>
-		<location id="id18" x="204" y="0">
-			<name x="221" y="-8">Wait4CS</name>
+		<location id="id18" x="357" y="51">
+			<name x="374" y="43">Wait4CS</name>
 		</location>
-		<location id="id19" x="204" y="136">
-			<name x="221" y="127">InCS</name>
+		<location id="id19" x="357" y="187">
+			<name x="374" y="178">InCS</name>
 		</location>
-		<location id="id20" x="0" y="136">
-			<name x="-76" y="127">AfterCS</name>
+		<location id="id20" x="153" y="187">
+			<name x="77" y="178">AfterCS</name>
 		</location>
 		<init ref="id17"/>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id17"/>
-			<label kind="synchronisation" x="-25" y="68">Go?</label>
+			<label kind="synchronisation" x="128" y="119">Go?</label>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id20"/>
-			<label kind="synchronisation" x="25" y="110">V[0]!</label>
+			<label kind="synchronisation" x="178" y="161">V[0]!</label>
 		</transition>
 		<transition>
 			<source ref="id18"/>
 			<target ref="id19"/>
-			<label kind="guard" x="204" y="34">ready[id]==1</label>
-			<label kind="synchronisation" x="204" y="51">Go?</label>
-			<label kind="assignment" x="204" y="68">ready[id]=0</label>
+			<label kind="guard" x="357" y="85">ready[id]==1</label>
+			<label kind="synchronisation" x="357" y="102">Go?</label>
+			<label kind="assignment" x="357" y="119">ready[id]=0</label>
 		</transition>
 		<transition>
 			<source ref="id17"/>
 			<target ref="id18"/>
-			<label kind="synchronisation" x="42" y="-17">P[0]!</label>
-			<label kind="assignment" x="42" y="0">ID=id,
+			<label kind="synchronisation" x="195" y="34">P[0]!</label>
+			<label kind="assignment" x="195" y="51">ID=id,
 ready[id]=0</label>
 		</transition>
 	</template>
