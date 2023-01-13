@@ -310,28 +310,36 @@ system Erik, Julia, Ines, Charlie, Progression, Bathroom, Mutex, Karin, Kalle;
 </system>
 	<queries>
 		<query>
-			<formula>E&lt;&gt; ! (nm &gt; 2 || nf &gt; 2)</formula>
-			<comment></comment>
+			<formula>A[] ! (sem[1] &lt; 0 || sem[1] &gt; 2)</formula>
+			<comment>Checks that it holds that no more than 2 processes can be in the bathroom at the same time, nor can the semaphore get a negative value.
+A negative value would mean that the P and V operations in the program is not working correctly, or is poorly implemented.
+The query is expected to return true if the above holds.</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (sem[1] == 2)</formula>
-			<comment></comment>
+			<formula>E&lt;&gt; (sem[1] == 0)</formula>
+			<comment>There is at least one path that reaches a state where two processes has entered the bathroom and are using its resoruces.
+The query is expected to return true since at max two processes are allowed in, and sem[1] == 0 implies that both resources are allocated and used.</comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; (Erik.InQueue &amp;&amp; Charlie.InQueue)</formula>
-			<comment></comment>
+			<formula>Erik.InQueue --&gt; Erik.InBathroom</formula>
+			<comment>Checks if it holds that if Erik enters the queue, he will eventually enter the bathroom. 
+The query is expected to return true, but returns false. 
+This is due to Uppaal not having a fair scheduler and Erik is not enforced/garanteed to progress from the queue to the bathroom. 
+That is, Erik could be stuck in the queue. </comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; not (Erik.InQueue &amp;&amp; Julia.InQueue)</formula>
-			<comment></comment>
+			<formula>A[] !(Erik.InQueue &amp;&amp; Julia.InQueue)</formula>
+			<comment>Checks if it holds for all possible states, that Erik and Julia will never be within the bathroom queue concurrently.
+The query is expected to return true, which proves that only one gender is allowed to queue for the bathroom at a time. </comment>
 		</query>
 		<query>
-			<formula>E&lt;&gt; not (Erik.InBathroom &amp;&amp; Julia.InBathroom)</formula>
-			<comment>Ensure that Erik and Julia cannot be inside the Critical Section at the same time, for any path.</comment>
+			<formula>A[] !(Erik.InBathroom &amp;&amp; Julia.InBathroom)</formula>
+			<comment>Ensures that Erik and Julia cannot be inside their critical section at the same time, for any path. 
+Expected to return true if mutual exclusion is certain, or false if Erik and Julia can be in the bathroom at the same time.</comment>
 		</query>
 		<query>
 			<formula>A[] ! deadlock</formula>
-			<comment>Ensure that there are no deadlocks for any path.</comment>
+			<comment>Ensure that there are no deadlocks for any path. Should always return true.</comment>
 		</query>
 	</queries>
 </nta>

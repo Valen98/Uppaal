@@ -1,36 +1,39 @@
 //This file was generated from (Academic) UPPAAL 4.1.26-1 (rev. 7BCF30B7363A9518), February 2022
 
 /*
-Ensure that none of the counter's value can exceed the total number of seats.
+Checks that it holds that no more than 2 processes can be in the bathroom at the same time, nor can the semaphore get a negative value.
+A negative value would mean that the P and V operations in the program is not working correctly, or is poorly implemented.
+The query is expected to return true if the above holds.
 */
-E<> ! (nm > 2 || nf > 2)
+A[] ! (sem[1] < 0 || sem[1] > 2)
 
 /*
-Checks that both seats will be in use at some point, for any path.
+There is at least one path that reaches a state where two processes has entered the bathroom and are using its resoruces.
+The query is expected to return true since at max two processes are allowed in, and sem[1] == 0 implies that both resources are allocated and used.
 */
-E<> (sem[1] == 2)
+E<> (sem[1] == 0)
 
 /*
-Ensures that Erik and Charlie can be in the queue simultaneously.
+Checks if it holds that if Erik enters the queue, he will eventually enter the bathroom. 
+The query is expected to return true, but returns false. 
+This is due to Uppaal not having a fair scheduler and Erik is not enforced\/garanteed to progress from the queue to the bathroom. 
+That is, Erik could be stuck in the queue. 
 */
-E<> (Erik.InQueue && Charlie.InQueue)
+Erik.InQueue --> Erik.InBathroom
 
 /*
-Ensures that Erik and Julia cannot be queue simultaneously, since they have different genders.
+Checks if it holds for all possible states, that Erik and Julia will never be within the bathroom queue concurrently.
+The query is expected to return true, which proves that only one gender is allowed to queue for the bathroom at a time. 
 */
-E<> not (Erik.InQueue && Julia.InQueue)
+A[] !(Erik.InQueue && Julia.InQueue)
 
 /*
-Ensure that Erik and Julia cannot be inside their critical section (use the bathroom) at the same time, for any path.
+Ensures that Erik and Julia cannot be inside their critical section at the same time, for any path. 
+Expected to return true if mutual exclusion is certain, or false if Erik and Julia can be in the bathroom at the same time.
 */
-E<> not (Erik.InBathroom && Julia.InBathroom)
+A[] !(Erik.InBathroom && Julia.InBathroom)
 
 /*
-Ensure that Erik and Charlie can use the bathroom simultaneously.
-*/
-E<> (Erik.InBathroom && Charlie.InBathroom)
-
-/*
-Ensure that there are no deadlocks for any path.
+Ensure that there are no deadlocks for any path. Should always return true.
 */
 A[] ! deadlock
