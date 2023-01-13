@@ -170,12 +170,10 @@ system Semaphore, Erik, Julia, Ines, Charlie, Progression;
 </system>
 	<queries>
 		<query>
-			<formula>E&lt;&gt; not (sem[0] &gt; 1 &amp;&amp; sem[0]&lt; 0)</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>A[] not (sem[0] &gt; 1 &amp;&amp; sem[0] &lt; 0)</formula>
-			<comment></comment>
+			<formula>A[] ! (sem[0] &gt; 1 || sem[0]&lt; 0)</formula>
+			<comment>Check if the semaphores resources are below 0 or greater than 1. 
+If the value would be greater than 1 or less than 0 then there are 2 processes inside the semaphore.
+This should return true because this is a binary semaphore where only 1 process can be inside the critical section and use the 1 resource.</comment>
 		</query>
 		<query>
 			<formula>Julia.Wait4CS --&gt; Julia.InCS</formula>
